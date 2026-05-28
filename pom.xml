@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.vanta</groupId>
+        <artifactId>vanta-starter-dependencies</artifactId>
+        <version>${revision}</version>
+        <relativePath>./vanta-starter-dependencies/pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.vanta</groupId>
+    <artifactId>vanta-starter</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>Vanta starter collection</description>
+
+    <modules>
+        <module>vanta-starter-dependencies</module>
+        <module>vanta-starter-bom</module>
+        <module>vanta-starter-core</module>
+        <module>vanta-starter-jackson</module>
+        <module>vanta-starter-api-doc</module>
+        <module>vanta-starter-validation</module>
+        <module>vanta-starter-web-service</module>
+        <module>vanta-starter-web</module>
+        <module>vanta-starter-trace</module>
+        <module>vanta-starter-data</module>
+        <module>vanta-starter-auth</module>
+        <module>vanta-starter-cache</module>
+        <module>vanta-starter-encrypt</module>
+        <module>vanta-starter-excel</module>
+        <module>vanta-starter-log</module>
+        <module>vanta-starter-security</module>
+        <module>vanta-starter-idempotent</module>
+        <module>vanta-starter-ratelimiter</module>
+        <module>vanta-starter-messaging</module>
+        <module>vanta-starter-influxdb</module>
+        <module>vanta-starter-zookeeper</module>
+        <module>vanta-starter-nacos</module>
+        <module>vanta-starter-elasticsearch</module>
+        <module>vanta-starter-observability</module>
+        <module>vanta-starter-lock</module>
+        <module>vanta-starter-storage</module>
+        <module>vanta-starter-scheduler</module>
+        <module>examples/vanta-web-service-demo</module>
+    </modules>
+</project>

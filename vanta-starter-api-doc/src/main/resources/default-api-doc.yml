@@ -1,0 +1,19 @@
+--- ### 接口文档配置
+vanta-starter:
+  api-doc:
+    enabled: false
+
+springdoc:
+  swagger-ui:
+    enabled: ${vanta-starter.api-doc.enabled:false}
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    show-extensions: true
+  api-docs:
+    enabled: ${springdoc.swagger-ui.enabled}
+    path: /v3/api-docs
+
+## 接口文档增强配置
+nextdoc4j:
+  enabled: true

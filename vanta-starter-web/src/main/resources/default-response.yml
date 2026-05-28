@@ -1,0 +1,7 @@
+vanta-starter:
+  web:
+    response:
+      enabled: true
+
+graceful-response:
+  print-exception-in-global-advice: false

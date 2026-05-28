@@ -1,0 +1,2 @@
+com.vanta.starter.cache.redis.autoconfigure.RedisAutoConfiguration
+com.vanta.starter.cache.redis.autoconfigure.RedissonAutoConfiguration

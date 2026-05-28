@@ -1,0 +1,2 @@
+com.vanta.starter.core.autoconfigure.application.ApplicationAutoConfiguration
+com.vanta.starter.core.autoconfigure.threadpool.ThreadPoolAutoConfiguration

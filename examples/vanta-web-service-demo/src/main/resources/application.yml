@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: vanta-web-service-demo
+
+application:
+  name: Vanta Web Service Demo
+  version: 0.0.1-SNAPSHOT
+  description: Vanta 最小 Web 服务架构示例
+
+vanta-starter:
+  web-service:
+    enabled: true

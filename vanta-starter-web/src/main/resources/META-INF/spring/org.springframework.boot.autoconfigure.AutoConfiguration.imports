@@ -1,0 +1,4 @@
+com.vanta.starter.web.autoconfigure.cors.CorsAutoConfiguration
+com.vanta.starter.web.autoconfigure.mvc.WebMvcAutoConfiguration
+com.vanta.starter.web.autoconfigure.response.GlobalResponseAutoConfiguration
+com.vanta.starter.web.autoconfigure.server.UndertowAutoConfiguration

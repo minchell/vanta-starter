@@ -1,0 +1,7 @@
+server:
+  extension:
+    enabled: true
+    disallowed-methods:
+      - CONNECT
+      - TRACE
+      - TRACK

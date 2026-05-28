@@ -1,0 +1,40 @@
+vanta-starter:
+  web-service:
+    enabled: true
+    response:
+      enabled: true
+    exception:
+      enabled: true
+    validation:
+      enabled: true
+    api-doc:
+      enabled: true
+    cors:
+      enabled: true
+  web:
+    response:
+      enabled: ${vanta-starter.web-service.response.enabled:true}
+    cors:
+      enabled: ${vanta-starter.web-service.cors.enabled:true}
+      allowed-origins:
+        - http://localhost:3000
+        - http://localhost:5173
+      allowed-methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      allowed-headers:
+        - '*'
+      exposed-headers:
+        - Content-Disposition
+  api-doc:
+    enabled: ${vanta-starter.web-service.api-doc.enabled:true}
+
+springdoc:
+  swagger-ui:
+    enabled: ${vanta-starter.web-service.api-doc.enabled:true}
+  api-docs:
+    enabled: ${vanta-starter.web-service.api-doc.enabled:true}

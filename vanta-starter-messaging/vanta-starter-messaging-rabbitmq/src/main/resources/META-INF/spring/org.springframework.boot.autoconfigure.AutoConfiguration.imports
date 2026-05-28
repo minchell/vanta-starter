@@ -1,0 +1,2 @@
+com.vanta.starter.messaging.rabbitmq.autoconfigure.RabbitMqAutoConfiguration
+com.vanta.starter.messaging.rabbitmq.autoconfigure.RabbitMqDelayAutoConfiguration
