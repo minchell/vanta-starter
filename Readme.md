@@ -1,6 +1,23 @@
 # vanta-starter
 
-`vanta-starter` 是独立发布的 Spring Boot starter 仓库，沉淀可在任意业务项目中按需引入的基础组件、后端通用组件和 starter 自动装配能力。
+`vanta-starter` 是内部长期复用的 Spring Boot starter 仓库，沉淀可在任意业务项目中按需引入或直接搬运的基础组件、后端通用组件和 starter 自动装配能力。
+
+本仓库按“开源级工程标准”建设，但定位不是对外社区开源运营，而是作为内部黄金模板使用：结构清晰、坐标稳定、边界明确、默认安全、测试可验证。
+
+完整使用标准见 [Vanta Starter 内部搬运标准](docs/internal-starter-standard.md)。
+
+## 推荐接入方式
+
+新 Web 服务优先引入 `vanta-starter-web-service` 作为最小基础服务底座：
+
+```xml
+<dependency>
+  <groupId>com.vanta</groupId>
+  <artifactId>vanta-starter-web-service</artifactId>
+</dependency>
+```
+
+它默认提供统一响应、全局异常、参数校验、JSON 规范、接口文档和基础 Web 配置。数据库、Redis、认证、消息、锁、文件、调度、搜索、时序库等能力不在默认底座中，必须按需引入对应 starter，并显式开启相关配置。
 
 ## Maven 坐标
 
@@ -70,3 +87,6 @@
 ## 使用原则
 - 根目录只负责展示能力地图，不建议业务项目直接依赖聚合 POM。
 - 业务项目按需引入具体子模块，避免把未使用能力一起带入。
+- `vanta-starter-web-service` 是默认基础 Web 服务能力，其它中间件和横切能力按需加载。
+- 会连接外部系统、注册全局拦截器或改变业务语义的 starter 默认应关闭，并通过显式 `enabled=true` 开启。
+- 数据库访问统一收敛到 Repository 边界，优先保持 MySQL / PostgreSQL 通用。

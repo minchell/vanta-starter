@@ -6,6 +6,8 @@
 
 它不包含数据库、Redis、认证、消息、锁、文件、调度等可选能力，这些能力应按需引入对应 starter。
 
+仓库级使用标准见 [Vanta Starter 内部搬运标准](../docs/internal-starter-standard.md)。
+
 ## 聚合能力
 
 - `vanta-starter-core`
@@ -49,3 +51,4 @@ vanta-starter:
 - 不承载业务逻辑。
 - 不连接数据库、缓存、消息或外部中间件。
 - 业务项目可以通过覆盖具体 starter 的配置或 Bean 替换默认行为。
+- 如果项目需要数据库、认证、缓存、日志、限流、消息、文件、调度等能力，应额外引入具体 starter，并在业务配置中显式开启。
