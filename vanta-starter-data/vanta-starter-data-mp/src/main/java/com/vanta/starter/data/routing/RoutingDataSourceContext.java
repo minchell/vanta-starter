@@ -5,67 +5,68 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
+import java.util.Set;
 
-/**
- * 数据源路由上下文。
- */
 public final class RoutingDataSourceContext {
 
-    /**
-     * 当前线程的数据源路由栈。
-     */
-    private static final ThreadLocal<Deque<RepositoryShardType>> SHARD_STACK = ThreadLocal.withInitial(ArrayDeque::new);
+    private static final ThreadLocal<Deque<String>> SHARD_STACK = ThreadLocal.withInitial(ArrayDeque::new);
 
-    /**
-     * 私有构造，禁止实例化。
-     */
     private RoutingDataSourceContext() {
     }
 
-    /**
-     * 压入数据源定位。
-     *
-     * @param shardType 数据源定位类型。
-     */
-    public static void push(RepositoryShardType shardType) {
-        RepositoryShardType next = shardType == null ? RepositoryShardType.AUTO : shardType;
-
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-            next = RepositoryShardType.MASTER;
-        }
-
-        TransactionRoutingGuard.assertCanRouteTo(next, current().orElse(null), TransactionSynchronizationManager.isActualTransactionActive());
-        SHARD_STACK.get().push(next);
+    public static void push(String shardKey, RepositoryShardDefinitionRegistry registry) {
+        push(shardKey, registry, Set.of());
     }
 
-    /**
-     * 弹出当前数据源定位。
-     */
-    public static void pop() {
-        Deque<RepositoryShardType> stack = SHARD_STACK.get();
+    public static void push(String shardKey, RepositoryShardDefinitionRegistry registry, Set<String> lookupKeys) {
+        String nextKey = resolve(shardKey, registry, lookupKeys);
+        RepositoryShardDefinition next = registry.require(nextKey);
+        RepositoryShardDefinition current = current().map(registry::require).orElse(null);
 
+        TransactionRoutingGuard.assertCanRouteTo(next, current, TransactionSynchronizationManager.isActualTransactionActive());
+        SHARD_STACK.get().push(next.key());
+    }
+
+    private static String resolve(String shardKey, RepositoryShardDefinitionRegistry registry, Set<String> lookupKeys) {
+        String requestedKey = shardKey == null ? RepositoryShardKeys.AUTO : shardKey;
+        RepositoryShardDefinition requested = registry.require(requestedKey);
+
+        if (RepositoryShardKeys.AUTO.equals(requested.key())) {
+            requested = registry.require(TransactionSynchronizationManager.isActualTransactionActive()
+                    ? RepositoryShardKeys.MASTER
+                    : RepositoryShardKeys.READ);
+        }
+
+        if (TransactionSynchronizationManager.isActualTransactionActive() && requested.fallbackKey() != null) {
+            requested = registry.require(requested.fallbackKey());
+        }
+
+        if (!lookupKeys.isEmpty() && !lookupKeys.contains(requested.key())) {
+            String fallbackKey = requested.fallbackKey();
+            if (fallbackKey != null && lookupKeys.contains(fallbackKey)) {
+                return fallbackKey;
+            }
+            throw new IllegalStateException("Repository shard key has no DataSource lookup key: " + requested.key());
+        }
+
+        return requested.key();
+    }
+
+    public static void pop() {
+        Deque<String> stack = SHARD_STACK.get();
         if (!stack.isEmpty()) {
             stack.pop();
         }
-
         if (stack.isEmpty()) {
             SHARD_STACK.remove();
         }
     }
 
-    /**
-     * 获取当前数据源定位。
-     *
-     * @return 当前数据源定位。
-     */
-    public static Optional<RepositoryShardType> current() {
-        Deque<RepositoryShardType> stack = SHARD_STACK.get();
+    public static Optional<String> current() {
+        Deque<String> stack = SHARD_STACK.get();
         return stack.isEmpty() ? Optional.empty() : Optional.of(stack.peek());
     }
 
-    /**
-     * 清理线程上下文。
-     */
     public static void clear() {
         SHARD_STACK.remove();
     }

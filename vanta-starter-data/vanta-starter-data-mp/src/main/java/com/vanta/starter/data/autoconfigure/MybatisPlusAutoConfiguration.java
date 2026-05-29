@@ -13,6 +13,11 @@ import com.vanta.starter.core.util.GeneralPropertySourceFactory;
 import com.vanta.starter.data.autoconfigure.idgenerator.MyBatisPlusIdGeneratorConfiguration;
 import com.vanta.starter.data.handler.CompositeBaseEnumTypeHandler;
 import com.vanta.starter.data.handler.InjMetaObjectHandler;
+import com.vanta.starter.data.routing.RepositoryRoutingDataSource;
+import com.vanta.starter.data.routing.RepositoryShardAspect;
+import com.vanta.starter.data.routing.RepositoryShardDefinitionCustomizer;
+import com.vanta.starter.data.routing.RepositoryShardDefinitionRegistry;
+import com.vanta.starter.data.routing.RepositoryShardValidator;
 import jakarta.annotation.PostConstruct;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -21,13 +26,16 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * MyBatis-Plus 自动配置。
@@ -99,6 +107,38 @@ public class MybatisPlusAutoConfiguration {
     @ConditionalOnMissingBean
     public MetaObjectHandler metaObjectHandler() {
         return new InjMetaObjectHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RepositoryShardDefinitionRegistry repositoryShardDefinitionRegistry(
+            Collection<RepositoryShardDefinitionCustomizer> customizers) {
+        RepositoryShardDefinitionRegistry registry = RepositoryShardDefinitionRegistry.createDefault();
+        customizers.forEach(customizer -> customizer.customize(registry));
+        registry.validateDefinitions();
+        return registry;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RepositoryShardAspect repositoryShardAspect(RepositoryShardDefinitionRegistry registry,
+                                                       Map<String, RepositoryRoutingDataSource> routingDataSources) {
+        return new RepositoryShardAspect(registry, repositoryRoutingLookupKeys(routingDataSources));
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RepositoryShardValidator repositoryShardValidator(ApplicationContext applicationContext,
+                                                             RepositoryShardDefinitionRegistry registry,
+                                                             Map<String, RepositoryRoutingDataSource> routingDataSources) {
+        return new RepositoryShardValidator(applicationContext, registry, repositoryRoutingLookupKeys(routingDataSources));
+    }
+
+    private Set<String> repositoryRoutingLookupKeys(Map<String, RepositoryRoutingDataSource> routingDataSources) {
+        return routingDataSources.values().stream()
+                .findFirst()
+                .map(RepositoryRoutingDataSource::lookupKeys)
+                .orElse(Set.of());
     }
 
     /**

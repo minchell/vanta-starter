@@ -2,22 +2,28 @@ package com.vanta.starter.data.routing;
 
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
-/**
- * Repository 动态路由数据源。
- * <p>
- * 该数据源只读取 Repository 基础设施设置的 {@link RoutingDataSourceContext}，
- * 业务层不能直接设置数据源 key。
- * </p>
- */
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 public class RepositoryRoutingDataSource extends AbstractRoutingDataSource {
 
-    /**
-     * 决定当前数据源路由 key。
-     *
-     * @return 数据源路由 key。
-     */
+    private final Set<String> lookupKeys = new LinkedHashSet<>();
+
+    @Override
+    public void setTargetDataSources(Map<Object, Object> targetDataSources) {
+        super.setTargetDataSources(targetDataSources);
+        lookupKeys.clear();
+        targetDataSources.keySet().forEach(key -> lookupKeys.add(String.valueOf(key)));
+    }
+
+    public Set<String> lookupKeys() {
+        return Collections.unmodifiableSet(lookupKeys);
+    }
+
     @Override
     protected Object determineCurrentLookupKey() {
-        return RoutingDataSourceContext.current().orElse(RepositoryShardType.AUTO).name();
+        return RoutingDataSourceContext.current().orElse(RepositoryShardKeys.MASTER);
     }
 }

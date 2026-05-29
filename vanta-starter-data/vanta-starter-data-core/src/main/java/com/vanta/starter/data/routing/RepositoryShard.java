@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * Domain Service 不允许感知数据库位置，也不允许使用该注解。
  * </p>
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RepositoryShard {
 
@@ -21,5 +21,5 @@ public @interface RepositoryShard {
      *
      * @return 数据源定位类型。
      */
-    RepositoryShardType value() default RepositoryShardType.AUTO;
+    String value() default RepositoryShardKeys.AUTO;
 }
