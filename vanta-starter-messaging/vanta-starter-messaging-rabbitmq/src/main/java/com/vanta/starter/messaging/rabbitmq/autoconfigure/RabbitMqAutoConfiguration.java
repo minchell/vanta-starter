@@ -78,6 +78,20 @@ public class RabbitMqAutoConfiguration {
     }
 
     /**
+     * 注册 Spring Bean 动态访问工具。
+     *
+     * <p>该 Bean 需要以静态工厂方法提前进入 BeanFactoryPostProcessor 阶段，否则后续根据配置动态注册
+     * RabbitMQ 交换机、队列和绑定时无法拿到 {@code ConfigurableListableBeanFactory}。</p>
+     *
+     * @return Spring Bean 动态访问工具
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public static SpringBeanUtil springBeanUtil() {
+        return new SpringBeanUtil();
+    }
+
+    /**
      * 注册 RabbitAdmin。
      *
      * <p>业务方没有声明 RabbitAdmin 时使用该默认 Bean，便于 Spring AMQP 执行队列、交换机和绑定声明。</p>
